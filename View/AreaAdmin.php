@@ -1,0 +1,109 @@
+<?php
+session_start();
+include('../Repositorio/UsuariosRepositorio.php');
+include('../Repositorio/CursoRepositorio.php');
+
+$usuarioRepositorio = new UsuarioRepositorio();
+$cursoRepositorio = new CursoRepositorio();
+$cursos = $cursoRepositorio->BuscarTodosOsCursos();
+$row = $usuarioRepositorio->BuscaDadosDoUsuarioLogado($_SESSION['email'], $_SESSION['senha']);
+$_SESSION['nome'] = $row['Nome'];
+$_SESSION['sobrenome'] = $row['Sobrenome'];
+$_SESSION['datanascimento'] = $row['DataNascimento'];
+$_SESSION['escolaridade'] = $row['Escolaridade'];
+$_SESSION['profissao'] = $row['Profissao'];
+
+?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <title>Area administrativa</title>
+  <meta charset="utf-8">
+  <link href="/PlataformaDeCursosEmPHP/CSS/style.css" rel="stylesheet" type="text/css" />
+  <link href="/PlataformaDeCursosEmPHP/CSS/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="/PlataformaDeCursosEmPHP/CSS/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-inverse">
+    <a class="navbar-brand" href="#">Home administrativa</a>
+
+
+    <div class="collapse navbar-collapse pull-right" id="conteudoNavbarSuportado">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item ">
+          <form action="/PlataformaDeCursosEmPHP/Controller/LoginController.php" method="POST">
+          <input type="submit" class="nav-link pull-right" name="deslogar" href="#" value="Sair" />
+          </form>
+        </li>
+      </ul>
+
+    </div>
+  </nav>
+
+
+<div class="container ">
+<div>
+<a href="https://localhost/PlataformaDeCursosEmPHP/View/CadastroDeCurso.php" class="btn btn-success btn-lg">Cadastrar novo curso</a>
+</div>
+   <?php 
+   function printFind($item, $key)
+   {
+    if($key == 'Link')
+    {
+        // echo '<div class="row">'.$item.'</div>';
+        return $item;
+    }
+   }
+   $ultimolink = "";
+   $count = 1;
+  
+  $html =  '<div class="row">';
+     foreach ($cursos as $curso)
+      {
+        
+        $key1 = $curso['Link'];
+        
+        if ($key1 != $ultimolink) 
+        {
+          
+          while ($count < 4 && $key1 != $ultimolink) 
+          {
+            
+            $html  .=
+            '<form action="/PlataformaDeCursosEmPHP/Controller/CadastroCursoController.php" method="POST"
+             class="col-md-3 te">
+             <div>'. $key1.' 
+             <input type="hidden" value='.'"'.$curso['Id'].'"'.'name="id">
+             <input type=submit class="btn btn-primary" value="Editar" name="editar">
+            <input type=submit class="btn btn-danger" value="Excluir" name="excluir">
+            
+            </div>
+            </form>';
+            $count++;
+            $ultimolink = $key1;
+          }
+         
+        }
+        
+     }
+     $html.= '</div>'; 
+            echo $html;
+  ?>
+
+</div>
+
+
+
+
+
+</body>
+<script type="text/javascript" src="/PlataformaDeCursosEmPHP/Scripts/bootstrap.min.js"></script>
+<script type="text/javascript" src="/PlataformaDeCursosEmPHP/Scripts/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/PlataformaDeCursosEmPHP/Scripts/validacao.js"></script>
+
+</html>
